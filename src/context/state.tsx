@@ -1,0 +1,1 @@
+// essa pasta deve guardar os estados compartilhados entre os componentes ex: login
