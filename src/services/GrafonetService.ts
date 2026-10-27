@@ -18,7 +18,7 @@ export class HttpError extends Error {
 }
 
 async function request(path: string, options?: RequestInit) {
-  const resposta = await fetch(`/api${path}`, {
+  const resposta = await fetch(path, {
     ...options,
     signal: AbortSignal.timeout(10_000),
   })
