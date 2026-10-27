@@ -4,7 +4,7 @@ export interface AuthCredentials {
 }
 
 export interface RegistrationCredentials extends AuthCredentials {
-  name: string
+  profile: import('../modules/auth/types').ProfileInput
   invite_token: string
 }
 
@@ -52,7 +52,7 @@ async function readResponseBody(response: Response): Promise<unknown> {
   }
 }
 
-async function request(path: string, init: RequestInit = {}): Promise<unknown> {
+export async function authenticatedFetch(path: string, init: RequestInit = {}): Promise<Response> {
   const headers = new Headers(init.headers)
   headers.set('Accept', 'application/json')
   if (accessToken) {
@@ -60,9 +60,8 @@ async function request(path: string, init: RequestInit = {}): Promise<unknown> {
   }
 
   const response = await fetch(path, { ...init, headers })
-  const body = await readResponseBody(response)
-
   if (!response.ok) {
+    const body = await readResponseBody(response)
     const message =
       isRecord(body) && typeof body.message === 'string'
         ? body.message
@@ -70,7 +69,11 @@ async function request(path: string, init: RequestInit = {}): Promise<unknown> {
     throw new ApiError(message, response.status)
   }
 
-  return body
+  return response
+}
+
+export async function request(path: string, init: RequestInit = {}): Promise<unknown> {
+  return readResponseBody(await authenticatedFetch(path, init))
 }
 
 function parseUser(value: unknown): AuthUser {
