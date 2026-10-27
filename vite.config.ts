@@ -8,12 +8,12 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       host: '0.0.0.0',
-      proxy: {
-        '/api': {
+      proxy: Object.fromEntries(
+        ['/auth', '/invitations', '/connections', '/graph', '/search', '/health'].map((path) => [path, {
           target: env.API_BASE_URL,
           changeOrigin: true,
-        },
-      },
+        }]),
+      ),
     },
   }
 })
