@@ -29,10 +29,14 @@ export class ApiError extends Error {
   }
 }
 
-let accessToken: string | null = null
+const TOKEN_KEY = 'grafonet.access_token'
+
+export function getAccessToken(): string | null {
+  return localStorage.getItem(TOKEN_KEY)
+}
 
 export function hasSessionToken(): boolean {
-  return accessToken !== null
+  return getAccessToken() !== null
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -55,11 +59,12 @@ async function readResponseBody(response: Response): Promise<unknown> {
 export async function authenticatedFetch(path: string, init: RequestInit = {}): Promise<Response> {
   const headers = new Headers(init.headers)
   headers.set('Accept', 'application/json')
-  if (accessToken) {
+  const accessToken = getAccessToken()
+  if (accessToken && !headers.has('Authorization')) {
     headers.set('Authorization', `Bearer ${accessToken}`)
   }
 
-  const response = await fetch(path, { ...init, headers })
+  const response = await fetch(path, { ...init, headers, signal: init.signal ?? AbortSignal.timeout(10_000) })
   if (!response.ok) {
     const body = await readResponseBody(response)
     const message =
@@ -89,7 +94,7 @@ function parseUser(value: unknown): AuthUser {
 }
 
 export async function login(credentials: AuthCredentials): Promise<AuthUser> {
-  const body = await request('/api/auth/login', {
+  const body = await request('/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(credentials),
@@ -104,14 +109,14 @@ export async function login(credentials: AuthCredentials): Promise<AuthUser> {
   }
 
   const user = parseUser(body.user)
-  accessToken = body.access_token
+  localStorage.setItem(TOKEN_KEY, body.access_token)
   return user
 }
 
 export async function register(
   credentials: RegistrationCredentials,
 ): Promise<AuthUser> {
-  const body = await request('/api/auth/register', {
+  const body = await request('/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(credentials),
@@ -121,12 +126,12 @@ export async function register(
 }
 
 export async function getCurrentUser(): Promise<AuthUser> {
-  const body = await request('/api/auth/me')
+  const body = await request('/auth/me')
   return parseUser(body)
 }
 
 export async function sendInvitation(email: string): Promise<Invitation> {
-  const body = await request('/api/invitations', {
+  const body = await request('/invitations', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email }),
@@ -149,10 +154,10 @@ export async function sendInvitation(email: string): Promise<Invitation> {
 }
 
 export async function logout(): Promise<void> {
-  await request('/api/auth/logout', { method: 'POST' })
-  accessToken = null
+  await request('/auth/logout', { method: 'POST' })
+  localStorage.removeItem(TOKEN_KEY)
 }
 
 export function clearSessionToken(): void {
-  accessToken = null
+  localStorage.removeItem(TOKEN_KEY)
 }

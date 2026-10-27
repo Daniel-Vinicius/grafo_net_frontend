@@ -7,16 +7,13 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     server: {
-      proxy: {
-        '/api': {
+      host: '0.0.0.0',
+      proxy: Object.fromEntries(
+        ['/auth', '/invitations', '/connections', '/graph', '/search', '/health'].map((path) => [path, {
           target: env.API_BASE_URL,
           changeOrigin: true,
-        },
-        '/health': {
-          target: env.API_BASE_URL,
-          changeOrigin: true,
-        },
-      },
+        }]),
+      ),
     },
   }
 })

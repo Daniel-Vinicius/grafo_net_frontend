@@ -35,22 +35,23 @@ describe('serviço autenticado', () => {
     fetchMock.mockResolvedValueOnce(new Response('photo', { headers: { 'Content-Type': 'image/png' } }))
     expect((await getPhoto()).type).toBe('image/png')
   })
-  it('envia senha atual sem persistir credenciais', async () => {
+  it('persiste apenas o JWT e envia senha atual nas operações de conta', async () => {
     await signIn()
     fetchMock.mockResolvedValue(new Response(null, { status: 204 }))
     await changeEmail('old', 'new@insper.edu.br')
     await changePassword('old', 'newpassword')
     await deleteAccount('old')
     expect(fetchMock.mock.calls.slice(1).map(call => [call[0], call[1].method, JSON.parse(call[1].body)])).toEqual([
-      ['/api/auth/account/email', 'PATCH', { current_password: 'old', new_email: 'new@insper.edu.br' }],
-      ['/api/auth/account/password', 'PATCH', { current_password: 'old', new_password: 'newpassword' }],
-      ['/api/auth/account', 'DELETE', { current_password: 'old' }],
+      ['/auth/account/email', 'PATCH', { current_password: 'old', new_email: 'new@insper.edu.br' }],
+      ['/auth/account/password', 'PATCH', { current_password: 'old', new_password: 'newpassword' }],
+      ['/auth/account', 'DELETE', { current_password: 'old' }],
     ])
-    expect(localStorage.length).toBe(0)
+    expect(localStorage.getItem('grafonet.access_token')).toBe('jwt-test')
+    expect(Object.keys(localStorage)).toEqual(['grafonet.access_token'])
     expect(sessionStorage.length).toBe(0)
   })
   it('propaga o status HTTP e mensagem de erro', async () => {
     fetchMock.mockResolvedValueOnce(ok({ message: 'Foto inválida' }, 400))
-    await expect(authenticatedFetch('/api/auth/profile/photo')).rejects.toMatchObject({ status: 400, message: 'Foto inválida' })
+    await expect(authenticatedFetch('/auth/profile/photo')).rejects.toMatchObject({ status: 400, message: 'Foto inválida' })
   })
 })
