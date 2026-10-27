@@ -1,32 +1,48 @@
-# React + TypeScript + Vite
+# GrafoNet — frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Frontend React + TypeScript para autenticação e convites do GrafoNet.
 
-Currently, two official plugins are available:
+## Executar
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Configure a URL da API no arquivo `.env` desta pasta:
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```env
+API_BASE_URL=http://localhost:5000
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Depois inicie o frontend:
+
+```powershell
+npm ci
+npm run dev
+```
+
+O Vite encaminha `/api` e `/health` para a API indicada por `API_BASE_URL`.
+
+## Endpoints esperados
+
+- `POST /api/auth/login`: recebe `{ "email": "...", "password": "..." }`,
+  retorna `{ "access_token": "...", "user": { "id": "...", "email": "..." } }`.
+  O JWT é enviado às rotas protegidas pelo header `Authorization: Bearer`.
+- `GET /api/auth/me`: retorna `{ "id": "...", "email": "..." }` para uma sessão
+  válida e HTTP 401 quando não há sessão.
+- `POST /api/auth/logout`: encerra e revoga o JWT atual.
+- `POST /api/auth/register`: recebe `{ "name": "...", "email": "...",
+  "password": "...", "invite_token": "..." }` e retorna `{ "id": "...",
+  "email": "..." }`. O token é lido do parâmetro `?token=...` da URL.
+- `POST /api/invitations`: recebe `{ "email": "..." }` de um usuário autenticado,
+  envia o convite por e-mail e retorna os dados públicos do convite. O link de
+  cadastro usa `/register?token=...`.
+
+O JWT é mantido somente em memória pelo frontend: não é gravado em
+`localStorage` ou `sessionStorage` e é perdido ao recarregar a página. O token
+do convite é enviado somente na requisição de cadastro; após o cadastro, o
+parâmetro é removido da URL. Senhas e tokens não são registrados no console.
+O backend valida convites e e-mails institucionais e aplica as regras de senha.
+
+## Verificações
+
+```powershell
+npm run lint
+npm run build
+```

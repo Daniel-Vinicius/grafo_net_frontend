@@ -12,6 +12,10 @@ export default defineConfig(({ mode }) => {
           target: env.API_BASE_URL,
           changeOrigin: true,
         },
+        '/health': {
+          target: env.API_BASE_URL,
+          changeOrigin: true,
+        },
       },
     },
   }
