@@ -1,10 +1,13 @@
+import { AuthProvider } from './context/state'
+import HomePage from './pages/HomePage'
+import './App.css'
+
 function App() {
   return (
-    <main>
-      <h1>Página inicial</h1>
-    </main>
+    <AuthProvider>
+      <HomePage />
+    </AuthProvider>
   )
 }
-
 
 export default App
