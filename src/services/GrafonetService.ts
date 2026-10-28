@@ -1,16 +1,23 @@
-// Compatibilidade para consumidores da main: usa a mesma sessão e transporte do perfil.
-import { ApiError, authenticatedFetch, getAccessToken, login as signIn } from './AuthService'
+import type { AxiosRequestConfig } from 'axios'
+import { ApiError, clearSessionToken, getAccessToken, login as signIn } from './AuthService'
+import { apiRequest } from './apiClient'
 export type { AuthUser as User } from './AuthService'
 
 export class HttpError extends ApiError {
-  constructor(status: number, message: string) { super(message, status) }
+  constructor(status: number, message: string) {
+    super(message, status)
+  }
 }
-async function request(path: string, options?: RequestInit) {
-  try { return await authenticatedFetch(path, options) } catch (error) {
+
+async function request<T = unknown>(path: string, config?: AxiosRequestConfig) {
+  try {
+    return await apiRequest<T>(path, config)
+  } catch (error) {
     if (error instanceof ApiError) throw new HttpError(error.status, error.message)
     throw error
   }
 }
+
 export async function login(email: string, password: string) {
   try {
     const user = await signIn({ email, password })
@@ -20,12 +27,16 @@ export async function login(email: string, password: string) {
     throw error
   }
 }
+
 export async function getMe(token: string) {
-  return (await request('/auth/me', { headers: { Authorization: `Bearer ${token}` } })).json()
+  return request('/auth/me', { headers: { Authorization: `Bearer ${token}` } })
 }
+
 export async function logout(token: string): Promise<void> {
   await request('/auth/logout', { method: 'POST', headers: { Authorization: `Bearer ${token}` } })
-  const { clearSessionToken } = await import('./AuthService')
   if (getAccessToken() === token) clearSessionToken()
 }
-export async function verificarHealth() { return (await request('/health')).json() }
+
+export async function verificarHealth() {
+  return request('/health')
+}

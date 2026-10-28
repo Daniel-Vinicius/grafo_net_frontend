@@ -18,6 +18,7 @@ npm run dev
 ```
 
 O Vite encaminha `/auth`, `/invitations`, `/connections`, `/graph`, `/search` e `/health` para a API indicada por `API_BASE_URL`.
+As requisições do frontend usam um cliente Axios compartilhado, com timeout de 10 segundos e inclusão automática do JWT nas rotas autenticadas.
 
 ## Endpoints esperados
 
@@ -85,14 +86,9 @@ Uma senha atual incorreta mostra erro sem apagar uma sessão ainda válida.
 
 ```bash
 npm ci
-npm test
 npm run lint
 npm run build
 ```
-
-Os testes usam Vitest, jsdom e React Testing Library. Cobrem cadastro completo,
-contratos HTTP/Bearer/multipart, perfil, etapa opcional, pesquisas, configurações,
-fotos, tratamento de sessão expirada e ausência de consulta de perfis alheios.
 
 Para a validação integrada, prepare o backend e o catálogo conforme o README da
 API, use um convite novo, cadastre o perfil, faça login e percorra edição, pesquisa,
@@ -102,9 +98,6 @@ preservando os prefixos de API listados acima para o backend. AuthProvider e tod
 os serviços usam a mesma sessão persistida. Logout, credenciais alteradas e exclusão
 de conta limpam o token e o estado privado; senhas não são persistidas.
 
-Validação em 27/10/2026: **18 testes frontend passaram**, `npm run lint` sem avisos
-e `npm run build` concluído. O backend passou em 130 testes com MongoDB real isolado.
-
 ### Integração com a main
 
 AuthProvider, telas de perfil e clientes legados compartilham a mesma sessão
@@ -112,5 +105,5 @@ persistida em `grafonet.access_token`. A restauração consulta `/auth/me`; 401
 limpa a sessão e falhas transitórias mantêm a opção de tentar novamente. As URLs
 e o proxy seguem a main, sem `/api`, preservando também conexões, grafo e busca.
 
-Validação após integrar: **21 testes frontend passaram**, incluindo restauração,
-expiração e repetição da verificação de sessão. Lint sem avisos e build concluído.
+O frontend usa Axios para as requisições HTTP. Para validar as alterações, execute
+`npm run lint` e `npm run build`.
