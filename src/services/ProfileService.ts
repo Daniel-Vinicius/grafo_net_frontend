@@ -1,5 +1,5 @@
 import { apiClient, apiRequest } from './apiClient'
-import type { Option, Profile, ProfileInput, ProfileOptions, Project, ProjectInput } from '../types/profile'
+import type { Option, Profile, ProfileOptions, ProfileUpdate, Project, ProjectInput } from '../types/profile'
 
 // Os contratos são compartilhados pelos formulários e serviços deste módulo.
 export async function getOptions(): Promise<ProfileOptions> {
@@ -8,14 +8,14 @@ export async function getOptions(): Promise<ProfileOptions> {
 export async function getProfile(): Promise<Profile> {
   return await apiRequest<Profile>('/profiles/me')
 }
-export async function updateProfile(data: Partial<ProfileInput & Pick<Profile, 'entity_ids' | 'research_project_ids' | 'experiences_completed'>>): Promise<Profile> {
+export async function getProfileById(id: string): Promise<Profile> {
+  return await apiRequest<Profile>(`/profiles/${encodeURIComponent(id)}`)
+}
+export async function updateProfile(data: ProfileUpdate): Promise<Profile> {
   return await apiRequest<Profile>('/profiles/me', { method: 'PATCH', data })
 }
 export async function getEntities(): Promise<Option[]> {
   return await apiRequest<Option[]>('/entities')
-}
-export async function getProjects(): Promise<Project[]> {
-  return await apiRequest<Project[]>('/research-projects')
 }
 export async function saveProject(data: ProjectInput, id?: string): Promise<Project> {
   return await apiRequest<Project>(`/research-projects${id ? '/' + encodeURIComponent(id) : ''}`, {

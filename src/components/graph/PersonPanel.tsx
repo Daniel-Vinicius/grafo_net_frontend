@@ -1,15 +1,16 @@
 import Icon from '../Icon'
-import type { GraphEdge, GraphProfile, SearchPath } from '../../types/graph'
+import type { GraphEdge, SearchPath } from '../../types/graph'
+import type { Profile } from '../../types/profile'
 import { describeProfile } from '../../utils/profileText'
 import ProfileAvatar from './ProfileAvatar'
 
 interface Props {
-  person: GraphProfile | null
+  person: Profile | null
   relation: string
   path: SearchPath | null
   noPath: boolean
   meId: string
-  people: Map<string, GraphProfile>
+  people: Map<string, Profile>
   edges: Map<string, GraphEdge>
   onClose: () => void
 }

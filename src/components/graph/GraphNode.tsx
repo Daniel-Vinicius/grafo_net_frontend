@@ -1,18 +1,18 @@
 import type { KeyboardEvent } from 'react'
 import useProfilePhoto from '../../hooks/useProfilePhoto'
-import type { GraphProfile } from '../../types/graph'
+import type { Profile } from '../../types/profile'
 import { avatarColor, type Point } from '../../utils/graphLayout'
 import { initials } from '../../utils/profileText'
 
-interface Props { profile: GraphProfile; point: Point; me: boolean; selected: boolean; onSelect: (id: string) => void }
-export default function GraphNode({ profile, point, me, selected, onSelect }: Props) {
+interface Props { profile: Profile; point: Point; me: boolean; faded: boolean; selected: boolean; onSelect: (id: string) => void }
+export default function GraphNode({ profile, point, me, faded, selected, onSelect }: Props) {
   const photo = useProfilePhoto(profile.id, profile.photo_id)
-  const radius = me ? 35 : 29
+  const radius = me ? 35 : faded ? 23 : 29
   function keyDown(event: KeyboardEvent) {
     if (event.key !== 'Enter' && event.key !== ' ') return
     event.preventDefault(); onSelect(profile.id)
   }
-  return <g className={`person-node${me ? ' me' : ''}${selected ? ' selected' : ''}`} transform={`translate(${point.x} ${point.y})`} role="button" tabIndex={0} aria-label={`Abrir perfil de ${profile.name}`} onClick={() => onSelect(profile.id)} onKeyDown={keyDown}>
+  return <g className={`person-node${me ? ' me' : ''}${faded ? ' faded' : ''}${selected ? ' selected' : ''}`} transform={`translate(${point.x} ${point.y})`} role="button" tabIndex={0} aria-label={`Abrir perfil de ${profile.name}`} onClick={() => onSelect(profile.id)} onKeyDown={keyDown}>
     <circle className="node-ring" r={radius + 4} />
     <circle className="node-avatar-bg" r={radius} fill={avatarColor(profile.id)} />
     <text className="node-initials" y="1">{initials(profile.name)}</text>

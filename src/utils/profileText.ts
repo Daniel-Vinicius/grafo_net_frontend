@@ -1,4 +1,5 @@
-import type { GraphProfile, PathCost } from '../types/graph'
+import type { PathCost } from '../types/graph'
+import type { Profile } from '../types/profile'
 
 export function plural(amount: number, singular: string, pluralForm: string): string {
   return `${amount} ${amount === 1 ? singular : pluralForm}`
@@ -7,7 +8,7 @@ export function initials(name: string): string {
   const parts = name.trim().split(/\s+/)
   return (parts[0][0] + (parts.length > 1 ? parts[parts.length - 1][0] : '')).toUpperCase()
 }
-export function describeProfile(profile: GraphProfile): string {
+export function describeProfile(profile: Profile): string {
   const job = [profile.role, profile.company].filter(Boolean).join(' na ')
   if (profile.type === 'alumni') return [job, profile.entry_year ? `Alumni ${profile.entry_year}` : 'Alumni'].filter(Boolean).join(' · ')
   if (profile.type === 'professor') return [profile.role, profile.course].filter(Boolean).join(' · ')

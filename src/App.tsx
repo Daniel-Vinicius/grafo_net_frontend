@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router'
+import LoadingScreen from './components/LoadingScreen'
 import LoginPage from './pages/LoginPage'
 import ProfileWorkspace from './pages/ProfileWorkspace'
 import RegisterPage from './pages/RegisterPage'
@@ -17,8 +18,8 @@ function SessionApp() {
   const finishRegistration = useCallback(() => {
     setNotice('Cadastro concluído. Agora você já pode entrar.'); navigate('/login', { replace: true })
   }, [navigate])
-  if (sessionPending) return <main className="app-shell"><section className="content-card" aria-busy={loading}>
-    {loading ? <p role="status">Verificando sessão...</p> : <><p role="alert">{error}</p>
+  if (sessionPending) return <main className="app-shell"><section className={loading ? undefined : 'content-card'} aria-busy={loading}>
+    {loading ? <LoadingScreen message="Verificando sua sessão..." /> : <><p role="alert">{error}</p>
       <button onClick={() => void refreshMe()}>Tentar novamente</button><button onClick={() => endSession('Entre novamente.')}>Voltar ao login</button></>}
   </section></main>
   if (user) return <Routes>

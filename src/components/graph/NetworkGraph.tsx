@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react'
-import type { GraphEdge, GraphProfile } from '../../types/graph'
+import type { GraphEdge } from '../../types/graph'
+import type { Profile } from '../../types/profile'
 import { stageSize, type Point } from '../../utils/graphLayout'
 import GraphEdgeLine from './GraphEdgeLine'
 import GraphNode from './GraphNode'
 
 export interface GraphLink { edge: GraphEdge; from: string; to: string; path: boolean }
-export interface GraphScene { nodes: GraphProfile[]; links: GraphLink[]; positions: Map<string, Point> }
+export interface GraphScene { nodes: Profile[]; links: GraphLink[]; positions: Map<string, Point>; faded: Set<string> }
 interface Props { scene: GraphScene; meId: string; selectedId: string | null; onSelect: (id: string) => void }
 
 const initialView = { x: 0, y: 0, ...stageSize }
@@ -51,6 +52,6 @@ export default function NetworkGraph({ scene, meId, selectedId, onSelect }: Prop
   return <svg ref={svg} className={`network-graph${dragging ? ' is-dragging' : ''}`} viewBox={`${view.x} ${view.y} ${view.width} ${view.height}`} role="img" aria-label="Grafo das conexões do usuário" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={endDrag} onPointerCancel={endDrag}>
     <defs>{Object.entries(arrows).map(([id, fill]) => <marker key={id} id={id} markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto-start-reverse" markerUnits="strokeWidth"><path d="M0,0 L8,4 L0,8 z" fill={fill} /></marker>)}</defs>
     <g>{scene.links.map(link => <GraphEdgeLine key={link.edge.id} edge={link.edge} from={scene.positions.get(link.from)!} to={scene.positions.get(link.to)!} path={link.path} />)}</g>
-    <g>{scene.nodes.map(node => <GraphNode key={node.id} profile={node} point={scene.positions.get(node.id)!} me={node.id === meId} selected={node.id === selectedId} onSelect={onSelect} />)}</g>
+    <g>{scene.nodes.map(node => <GraphNode key={node.id} profile={node} point={scene.positions.get(node.id)!} me={node.id === meId} faded={scene.faded.has(node.id)} selected={node.id === selectedId} onSelect={onSelect} />)}</g>
   </svg>
 }
