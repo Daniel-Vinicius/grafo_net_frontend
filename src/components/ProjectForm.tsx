@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
-import type { ProfileOptions, ProjectInput } from '../types'
-import { statusLabels } from '../types'
+import type { ProfileOptions, ProjectInput } from '../types/profile'
+import { statusLabels } from '../types/profile'
 
 interface Props { initial: ProjectInput; options: ProfileOptions; onSave: (value: ProjectInput) => Promise<void>; onError: (error: unknown) => void }
 export default function ProjectForm({ initial, options, onSave, onError }: Props) {

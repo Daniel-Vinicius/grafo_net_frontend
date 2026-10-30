@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (protectedRequest && cause instanceof authService.ApiError && cause.status === 401) {
         clearSession(); setError('Sessão inválida ou expirada. Entre novamente.')
       } else {
-        setError(cause instanceof authService.ApiError && cause.status < 500 ? `${failure} ${cause.message}` : failure)
+        setError(cause instanceof authService.ApiError && cause.status < 500 ? cause.message : failure)
       }
       return false
     } finally { busy.current = false; setLoading(false) }
@@ -49,5 +49,5 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (initialToken) void Promise.resolve().then(() => { if (active) void refreshMe() })
     return () => { active = false }
   }, [initialToken, refreshMe])
-  return <AuthContext.Provider value={{ user, loading, error, sessionPending, login, logout, refreshMe, acceptSession, clearSession }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ user, loading, error, sessionPending, login, logout, refreshMe, clearSession }}>{children}</AuthContext.Provider>
 }

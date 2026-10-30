@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { changeEmail, changePassword, deleteAccount } from '../service'
+import { changeEmail, changePassword, deleteAccount } from '../services/ProfileService'
 
 interface Props {
   onComplete: (message: string) => void

@@ -7,7 +7,7 @@ export interface AuthCredentials {
 }
 
 export interface RegistrationCredentials extends AuthCredentials {
-  profile: import('../modules/auth/types').ProfileInput
+  profile: import('../types/profile').ProfileInput
   invite_token: string
 }
 

@@ -5,8 +5,23 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  color: #0f172a;
-  background: #f5f7fb;
+  --red: #e31b23;
+  --red-dark: #bd1018;
+  --red-light: #ff3842;
+  --red-soft: #fff0f1;
+  --ink: #18191b;
+  --muted: #6f747b;
+  --line: #e6e8eb;
+  --line-strong: #dfe2e6;
+  --panel: #ffffff;
+  --canvas: #f6f7f8;
+  --nav: #17191c;
+  --focus: rgba(227, 27, 35, 0.25);
+  --shadow: 0 12px 32px rgba(19, 24, 31, 0.08);
+  --radius: 18px;
+
+  color: var(--ink);
+  background: var(--canvas);
 
   font-optical-sizing: auto;
   font-weight: 400;
@@ -27,7 +42,16 @@ input {
   font: inherit;
 }
 
-button:focus-visible {
-  outline: 3px solid rgba(2, 132, 199, 0.45);
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.icon { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }

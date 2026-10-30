@@ -9,7 +9,6 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<boolean>
   logout: () => Promise<boolean>
   refreshMe: () => Promise<boolean>
-  acceptSession: (user: AuthUser) => void
   clearSession: () => void
 }
 export const AuthContext = createContext<AuthContextValue | null>(null)

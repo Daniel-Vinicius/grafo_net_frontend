@@ -4,10 +4,10 @@ Frontend React + TypeScript para autenticação e convites do GrafoNet.
 
 ## Executar
 
-Configure a URL da API no arquivo `.env` desta pasta:
+Copie `.env.example` para `.env` e configure a URL da API:
 
 ```env
-API_BASE_URL=http://localhost:5000
+VITE_API_URL=http://localhost:5000
 ```
 
 Depois inicie o frontend:
@@ -17,8 +17,13 @@ npm ci
 npm run dev
 ```
 
-O Vite encaminha `/auth`, `/invitations`, `/connections`, `/graph`, `/search` e `/health` para a API indicada por `API_BASE_URL`.
-As requisições do frontend usam um cliente Axios compartilhado, com timeout de 10 segundos e inclusão automática do JWT nas rotas autenticadas.
+As requisições usam um cliente Axios compartilhado (`src/services/apiClient.ts`), com `baseURL` vinda de `VITE_API_URL`, timeout de 10 segundos e inclusão automática do JWT nas rotas autenticadas.
+A API libera CORS somente para o seu `FRONTEND_URL`. Em desenvolvimento, abra o app em `http://localhost:5173`; `127.0.0.1` ou o IP da rede são bloqueados.
+
+## Telas de acesso
+
+- `/login`: entrada com e-mail e senha.
+- `/register?token=...`: cadastro, acessível somente pelo link do e-mail de convite. Sem token, redireciona para `/login`. Nenhum link leva a esta tela.
 
 ## Endpoints esperados
 
@@ -53,10 +58,10 @@ npm run build
 ## Perfil e configurações da conta
 
 O cadastro envia `profile` com `name`, `course_id`, `semester`, `field_id` e `bio`.
-Cursos e áreas vêm de `GET /auth/profile-options`; semestre é de 1 a 8. Não há
+Cursos e áreas vêm de `GET /profiles/options`; o limite de semestres vem de cada curso (8 ou 10). Área e bio são opcionais e o cadastro pede só nome, e-mail, senha, curso e semestre. Não há
 campo de interesses. Nome e dados pessoais pertencem ao perfil, não ao usuário.
 
-As funcionalidades novas ficam em `src/modules/auth`:
+As telas ficam em `src/pages` e os formulários em `src/components`:
 
 - `/`: entrada autenticada com acesso às funcionalidades; homepage definitiva pendente.
 - `/profile`: somente o próprio perfil, foto e experiências.
@@ -92,9 +97,9 @@ npm run build
 
 Para a validação integrada, prepare o backend e o catálogo conforme o README da
 API, use um convite novo, cadastre o perfil, faça login e percorra edição, pesquisa,
-foto, troca de senha e exclusão. O Vite encaminha as rotas da API, sem prefixo `/api`, ao backend configurado.
-Em produção, configure fallback da SPA para `index.html` nas rotas do frontend,
-preservando os prefixos de API listados acima para o backend. AuthProvider e todos
+foto, troca de senha e exclusão.
+Em produção, defina `VITE_API_URL` no build e configure fallback da SPA para
+`index.html`. AuthProvider e todos
 os serviços usam a mesma sessão persistida. Logout, credenciais alteradas e exclusão
 de conta limpam o token e o estado privado; senhas não são persistidas.
 
@@ -103,7 +108,7 @@ de conta limpam o token e o estado privado; senhas não são persistidas.
 AuthProvider, telas de perfil e clientes legados compartilham a mesma sessão
 persistida em `grafonet.access_token`. A restauração consulta `/auth/me`; 401
 limpa a sessão e falhas transitórias mantêm a opção de tentar novamente. As URLs
-e o proxy seguem a main, sem `/api`, preservando também conexões, grafo e busca.
+seguem a main, sem `/api`, preservando também conexões, grafo e busca.
 
 O frontend usa Axios para as requisições HTTP. Para validar as alterações, execute
 `npm run lint` e `npm run build`.
