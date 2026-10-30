@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
-import { Link, NavLink, Navigate, Route, Routes, useNavigate, useParams } from 'react-router'
+import { Link, Navigate, Route, Routes, useNavigate, useParams } from 'react-router'
 import { ApiError, logout, type AuthUser } from '../services/AuthService'
 import { getErrorMessage } from '../services/apiClient'
 import { getEntities, getOptions, getProfile, getProjects, saveProject, updateProfile } from '../services/ProfileService'
@@ -10,6 +10,8 @@ import AccountSettings from '../components/AccountSettings'
 import ExperienceForm from '../components/ExperienceForm'
 import ProjectForm from '../components/ProjectForm'
 import InvitationForm from '../components/InvitationForm'
+import AppSidebar from '../components/AppSidebar'
+import GraphPage from './GraphPage'
 
 interface Data { profile: Profile; options: ProfileOptions; entities: Option[]; projects: Project[] }
 interface Props { user: AuthUser; onSessionEnd: (message: string) => void }
@@ -69,21 +71,16 @@ export default function ProfileWorkspace({ user, onSessionEnd }: Props) {
     await updateProfile({ entity_ids: entityIds, research_project_ids: projectIds, experiences_completed: true })
     await reload(); setNotice('Experiências atualizadas.'); navigate('/profile')
   }
-  return <main className="workspace">
-    <header className="workspace-header"><Link className="brand" to="/">GrafoNet</Link>
-      <nav aria-label="Navegação principal">
-        <NavLink to="/" end>Início</NavLink><NavLink to="/profile">Meu perfil</NavLink><NavLink to="/research-projects">Pesquisas</NavLink><NavLink to="/invitations">Convites</NavLink><NavLink to="/account">Conta</NavLink>
-        <button className="secondary-button" disabled={busy} onClick={async () => {
-          setBusy(true)
-          try { await logout(); onSessionEnd('Você saiu da sua conta.') } catch (error) { report(error) } finally { setBusy(false) }
-        }}>{busy ? 'Saindo...' : 'Sair'}</button>
-      </nav>
-    </header>
-    <div className="workspace-body">
+  async function signOut() {
+    setBusy(true)
+    try { await logout(); onSessionEnd('Você saiu da sua conta.') } catch (error) { report(error) } finally { setBusy(false) }
+  }
+  return <AppSidebar profile={profile} courseName={options.courses.find(item => item.id === profile.course_id)?.name} busy={busy} onLogout={() => void signOut()}>
+    <main className="workspace-body">
       {error && <p role="alert" className="form-error">{error}<button type="button" className="dismiss" onClick={() => setError('')} aria-label="Fechar erro">×</button></p>}
       {notice && <p role="status" className="form-success">{notice}</p>}
       <Routes>
-        <Route path="/" element={!profile.experiences_completed ? <Navigate to="/profile/experiences" replace /> : <section className="content-card"><h1>Bem-vindo, {profile.name}</h1><p>Seu espaço no GrafoNet.</p><Link to="/profile">Acessar meu perfil</Link></section>} />
+        <Route path="/" element={!profile.experiences_completed ? <Navigate to="/profile/experiences" replace /> : <GraphPage profileId={profile.id} onError={report} />} />
         <Route path="/profile" element={<section className="content-card"><h1>{profile.name}</h1>
           <PhotoPanel photoId={profile.photo_id} onChanged={reload} onError={report} />
           <dl><dt>Curso</dt><dd>{options.courses.find(item => item.id === profile.course_id)?.name}</dd><dt>Semestre</dt><dd>{profile.semester}º</dd><dt>Área de atuação</dt><dd>{options.fields.find(item => item.id === profile.field_id)?.name}</dd></dl>
@@ -115,6 +112,6 @@ export default function ProfileWorkspace({ user, onSessionEnd }: Props) {
         <Route path="/invitations" element={<InvitationForm onError={report} />} />
         <Route path="*" element={<section className="content-card"><h1>Página não encontrada</h1><Link to="/">Voltar ao início</Link></section>} />
       </Routes>
-    </div>
-  </main>
+    </main>
+  </AppSidebar>
 }

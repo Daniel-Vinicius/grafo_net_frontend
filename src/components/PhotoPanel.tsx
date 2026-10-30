@@ -36,7 +36,7 @@ export default function PhotoPanel({ photoId, onChanged, onError }: Props) {
     {url ? <img className="profile-photo" src={url} alt="Sua foto de perfil" /> : <div className="photo-placeholder">Sem foto</div>}
     <div className="form-field"><label htmlFor="profile-photo">Adicionar ou trocar foto</label>
       <input id="profile-photo" type="file" accept="image/jpeg,image/png" disabled={busy} onChange={select} />
-      <small>JPEG ou PNG, até 2 MiB e 16 milhões de pixels.</small></div>
+      <small>JPEG ou PNG, até 2 MB.</small></div>
     {photoId && <button type="button" className="secondary-button" disabled={busy} onClick={remove}>Remover foto</button>}
     {busy && <p role="status">Atualizando foto...</p>}
   </section>
