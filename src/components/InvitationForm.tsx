@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { sendInvitation } from '../../../services/AuthService'
+import { sendInvitation } from '../services/AuthService'
 
 export default function InvitationForm({ onError }: { onError: (error: unknown) => void }) {
   const [email, setEmail] = useState('')

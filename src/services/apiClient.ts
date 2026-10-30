@@ -21,6 +21,7 @@ export function clearSessionToken(): void {
 }
 
 export const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
   timeout: 10_000,
   headers: { Accept: 'application/json' },
 })
@@ -51,6 +52,13 @@ apiClient.interceptors.response.use(
     return Promise.reject(error)
   },
 )
+
+export function getErrorMessage(error: unknown): string {
+  if (axios.isAxiosError(error)) {
+    return 'Não foi possível conectar à API. Verifique sua conexão e tente novamente.'
+  }
+  return error instanceof Error ? error.message : 'Não foi possível concluir a operação.'
+}
 
 export async function apiRequest<T = unknown>(
   url: string,

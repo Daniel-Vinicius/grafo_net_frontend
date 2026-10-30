@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
-import type { Option, Profile, Project } from '../types'
+import type { Option, Profile, Project } from '../types/profile'
 
 interface Props { profile: Profile; entities: Option[]; projects: Project[]; onboarding: boolean; onSave: (entityIds: string[], projectIds: string[]) => Promise<void>; onSkip: () => Promise<void>; onError: (error: unknown) => void }
 export default function ExperienceForm({ profile, entities, projects, onboarding, onSave, onSkip, onError }: Props) {

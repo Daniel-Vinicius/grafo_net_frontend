@@ -1,5 +1,5 @@
 import { useEffect, useState, type ChangeEvent } from 'react'
-import { getPhoto, removePhoto, uploadPhoto } from '../service'
+import { getPhoto, removePhoto, uploadPhoto } from '../services/ProfileService'
 
 interface Props { photoId: string | null; onChanged: () => Promise<void>; onError: (error: unknown) => void }
 export default function PhotoPanel({ photoId, onChanged, onError }: Props) {

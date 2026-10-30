@@ -1,21 +1,18 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { Link, NavLink, Navigate, Route, Routes, useNavigate, useParams } from 'react-router'
-import { ApiError, logout, type AuthUser } from '../../../services/AuthService'
-import { getEntities, getOptions, getProfile, getProjects, saveProject, updateProfile } from '../service'
-import { emptyProject, statusLabels, type Option, type Profile, type ProfileInput, type ProfileOptions, type Project } from '../types'
-import ProfileFields from './ProfileFields'
-import PhotoPanel from './PhotoPanel'
-import AccountSettings from './AccountSettings'
-import ExperienceForm from './ExperienceForm'
-import ProjectForm from './ProjectForm'
-import InvitationForm from './InvitationForm'
+import { ApiError, logout, type AuthUser } from '../services/AuthService'
+import { getErrorMessage } from '../services/apiClient'
+import { getEntities, getOptions, getProfile, getProjects, saveProject, updateProfile } from '../services/ProfileService'
+import { emptyProject, statusLabels, type Option, type Profile, type ProfileInput, type ProfileOptions, type Project } from '../types/profile'
+import ProfileFields from '../components/ProfileFields'
+import PhotoPanel from '../components/PhotoPanel'
+import AccountSettings from '../components/AccountSettings'
+import ExperienceForm from '../components/ExperienceForm'
+import ProjectForm from '../components/ProjectForm'
+import InvitationForm from '../components/InvitationForm'
 
 interface Data { profile: Profile; options: ProfileOptions; entities: Option[]; projects: Project[] }
 interface Props { user: AuthUser; onSessionEnd: (message: string) => void }
-function message(error: unknown): string {
-  if (error instanceof TypeError) return 'Não foi possível conectar à API. Tente novamente.'
-  return error instanceof Error ? error.message : 'Não foi possível concluir a operação.'
-}
 function ProfileEditor({ data, onSave, onError }: { data: Data; onSave: (value: ProfileInput) => Promise<void>; onError: (error: unknown) => void }) {
   const [value, setValue] = useState<ProfileInput>({ name: data.profile.name, course_id: data.profile.course_id, semester: data.profile.semester, field_id: data.profile.field_id, bio: data.profile.bio })
   const [busy, setBusy] = useState(false)
@@ -51,7 +48,7 @@ export default function ProfileWorkspace({ user, onSessionEnd }: Props) {
     if (error instanceof ApiError && error.status === 401 && error.message !== 'Senha atual incorreta') {
       onSessionEnd('Sua sessão expirou. Entre novamente.'); return
     }
-    setError(message(error))
+    setError(getErrorMessage(error))
   }, [onSessionEnd])
   const load = useCallback(async (): Promise<Data> => {
     const [profile, options, entities, projects] = await Promise.all([getProfile(), getOptions(), getEntities(), getProjects()])

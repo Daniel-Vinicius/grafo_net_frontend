@@ -1,6 +1,7 @@
 export interface Option { id: string; name: string }
+export interface Course extends Option { semesters: number }
 export interface ProfileOptions {
-  courses: Option[]
+  courses: Course[]
   fields: Option[]
   semesters: number[]
   statuses: string[]
