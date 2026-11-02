@@ -1,6 +1,6 @@
 # GrafoNet — frontend
 
-Frontend React + TypeScript para autenticação e convites do GrafoNet.
+Frontend React + TypeScript para autenticação, perfil, rede, conexões e orientações do GrafoNet.
 
 ## Executar
 
@@ -51,6 +51,7 @@ O backend valida convites e e-mails institucionais e aplica as regras de senha.
 ## Verificações
 
 ```powershell
+npm test
 npm run lint
 npm run build
 ```
@@ -63,7 +64,7 @@ campo de interesses. Nome e dados pessoais pertencem ao perfil, não ao usuário
 
 As telas ficam em `src/pages` e os formulários em `src/components`:
 
-- `/`: entrada autenticada com acesso às funcionalidades; homepage definitiva pendente.
+- `/`: grafo de conexões próximas e busca por afinidade, com painel de pessoa.
 - `/profile`: somente o próprio perfil, foto e experiências.
 - `/profile/edit`: nome, curso, semestre, área e bio.
 - `/profile/experiences`: seleção de entidades e iniciação científica; aparece como
@@ -72,7 +73,7 @@ As telas ficam em `src/pages` e os formulários em `src/components`:
 - `/account`: e-mail, senha, foto via perfil e exclusão definitiva com senha/confirmação.
 - `/invitations`: fluxo de convites já existente.
 
-Não há lista/busca de pessoas nem endereço para acessar perfil de outro usuário.
+A busca de pessoas permite consultar caminhos e solicitar conexões. Não há edição de perfis alheios.
 O cliente nunca envia um proprietário ao editar seu perfil. As permissões também
 são verificadas no backend; ocultar controles não substitui autorização.
 
@@ -91,6 +92,7 @@ Uma senha atual incorreta mostra erro sem apagar uma sessão ainda válida.
 
 ```bash
 npm ci
+npm test
 npm run lint
 npm run build
 ```
@@ -111,4 +113,34 @@ limpa a sessão e falhas transitórias mantêm a opção de tentar novamente. As
 seguem a main, sem `/api`, preservando também conexões, grafo e busca.
 
 O frontend usa Axios para as requisições HTTP. Para validar as alterações, execute
-`npm run lint` e `npm run build`.
+`npm test`, `npm run lint` e `npm run build`.
+
+## Pessoas, caminhos e orientações
+
+- `/people`: busca por afinidade via `POST /search`, com ordenação por proximidade
+  (padrão) ou relevância e paginação de dez resultados. A busca depende dos
+  embeddings do backend; perfis aguardando indexação são sinalizados.
+- “Solicitar conexão” também está disponível no painel de pessoa do grafo.
+  Envia `POST /connections` com `target_user_id`; vínculos aceitos e solicitações
+  enviadas/recebidas impedem uma nova solicitação. Conflitos atualizam os vínculos.
+  As ações existentes de aceitar, recusar, cancelar e remover continuam em Conexões.
+- `/people/:personId/path`: consulta `GET /graph/paths/{id}` e mostra a sequência
+  de pessoas, vínculos e número de saltos. Os nomes vêm de `graph.nodes` e as
+  arestas são associadas por `steps.edge_id`. Pessoa inexistente e ausência de
+  caminho são estados distintos. A tela também abre pelo painel do grafo.
+- `/orientations`: exclusiva para professores; consulta
+  `GET /research-participations?status=pending|confirmed|rejected`.
+  Pendências oferecem confirmação/rejeição via `PATCH /research-participations/{id}`
+  com `{ status: "confirmed" | "rejected" }`. O sucesso 204 atualiza a lista.
+  O cadastro de participações dos alunos fica fora deste fluxo.
+
+As novas telas usam o cliente Axios e o JWT existentes, sem alterar o contrato
+HTTP. Consultas antigas são descartadas e falhas temporárias permitem nova tentativa;
+401 encerra a sessão. Os testes usam Vitest, jsdom e React Testing Library, com
+serviços simulados nas telas e adaptador Axios simulado nos contratos HTTP.
+Não acessam MongoDB, Gemini ou o banco configurado.
+
+A CI (`.github/workflows/checks.yml`) executa instalação pelo lockfile, testes,
+lint sem avisos, build TypeScript/Vite e `git diff --check` em pushes e PRs.
+Em produção, `/people` e `/orientations` precisam do fallback da SPA; as chamadas
+HTTP continuam usando `VITE_API_URL`, sem proxy adicional no Vite.

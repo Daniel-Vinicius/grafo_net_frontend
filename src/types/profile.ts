@@ -83,3 +83,18 @@ export const typeLabels: Record<string, string> = { aluno: 'Aluno', alumni: 'Alu
 export const statusLabels: Record<string, string> = {
   planned: 'Planejado', in_progress: 'Em andamento', completed: 'Concluído', cancelled: 'Cancelado',
 }
+export type ParticipationStatus = 'pending' | 'confirmed' | 'rejected'
+export interface Participation {
+  id: string
+  project_id: string
+  advisor_user_id: string | null
+  role: string
+  start_date: string
+  end_date: string | null
+  status: ParticipationStatus
+}
+export interface ReceivedParticipation {
+  profile_id: string
+  profile_name: string
+  participation: Participation
+}

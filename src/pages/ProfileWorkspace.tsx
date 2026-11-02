@@ -17,6 +17,9 @@ import LoadingScreen from '../components/LoadingScreen'
 import ConnectionsPage from './ConnectionsPage'
 import GraphPage from './GraphPage'
 import ProfilePage from './ProfilePage'
+import PeoplePage from './PeoplePage'
+import PathPage from './PathPage'
+import OrientationsPage from './OrientationsPage'
 
 interface Data { profile: Profile; options: ProfileOptions; entities: Option[] }
 interface Props { user: AuthUser; onSessionEnd: (message: string) => void }
@@ -105,7 +108,7 @@ export default function ProfileWorkspace({ user, onSessionEnd }: Props) {
       {error && <p role="alert" className="form-error">{error}<button type="button" className="dismiss" onClick={() => setError('')} aria-label="Fechar erro">×</button></p>}
       {notice && <p role="status" className="form-success">{notice}</p>}
       <Routes>
-        <Route path="/" element={!profile.experiences_completed ? <Navigate to="/profile/experiences" replace /> : <GraphPage profileId={profile.id} onError={report} />} />
+        <Route path="/" element={!profile.experiences_completed ? <Navigate to="/profile/experiences" replace /> : <GraphPage profileId={profile.id} connections={connections} onConnectionsChanged={refreshNetwork} onError={report} />} />
         <Route path="/connections" element={<ConnectionsPage meId={profile.id} connections={connections} onChanged={refreshNetwork} onError={report} />} />
         <Route path="/profile" element={<ProfilePage profile={profile} entities={entities} userId={user.id} onChanged={reload} onError={report} />} />
         <Route path="/profile/edit" element={<ProfileEditor data={data} onError={report} onSave={async value => { setError(''); await updateProfile(value); await reload(); setNotice('Perfil atualizado.'); navigate('/profile') }} />} />
@@ -114,6 +117,9 @@ export default function ProfileWorkspace({ user, onSessionEnd }: Props) {
         }} />} />
         <Route path="/profile/research/new" element={<ProjectEditor data={data} userId={user.id} onError={report} onSaved={async () => { await reload(); setNotice('Pesquisa adicionada ao perfil.'); navigate('/profile') }} />} />
         <Route path="/profile/research/:projectId/edit" element={<ProjectEditor data={data} userId={user.id} onError={report} onSaved={async () => { await reload(); setNotice('Pesquisa atualizada.'); navigate('/profile') }} />} />
+        <Route path="/people" element={<PeoplePage userId={profile.id} onChanged={refreshNetwork} onError={report} />} />
+        <Route path="/people/:personId/path" element={<PathPage onError={report} />} />
+        <Route path="/orientations" element={profile.type === 'professor' ? <OrientationsPage onError={report} /> : <section className="content-card"><h1>Orientações</h1><p role="alert">Somente professores recebem orientações.</p></section>} />
         <Route path="/account" element={<AccountSettings onComplete={onSessionEnd} onError={report} />} />
         <Route path="/invitations" element={<InvitationForm onError={report} />} />
         <Route path="*" element={<section className="content-card"><h1>Página não encontrada</h1><Link to="/">Voltar ao início</Link></section>} />

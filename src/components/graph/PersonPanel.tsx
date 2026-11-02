@@ -1,10 +1,15 @@
+import { Link } from 'react-router'
+import ConnectionRequest from './ConnectionRequest'
 import Icon from '../Icon'
-import type { GraphEdge, SearchPath } from '../../types/graph'
+import type { Connection, GraphEdge, SearchPath } from '../../types/graph'
 import type { Profile } from '../../types/profile'
 import { describeProfile } from '../../utils/profileText'
 import ProfileAvatar from './ProfileAvatar'
 
 interface Props {
+  connections: Connection[]
+  onConnectionsChanged: () => Promise<void>
+  onError: (error: unknown) => void
   person: Profile | null
   relation: string
   path: SearchPath | null
@@ -14,7 +19,7 @@ interface Props {
   edges: Map<string, GraphEdge>
   onClose: () => void
 }
-export default function PersonPanel({ person, relation, path, noPath, meId, people, edges, onClose }: Props) {
+export default function PersonPanel({ person, relation, path, noPath, meId, people, edges, onClose, connections, onConnectionsChanged, onError }: Props) {
   if (!person) return <aside className="person-panel" aria-live="polite">
     <div className="person-panel-empty">
       <div className="empty-network-icon"><Icon name="network" /></div>
@@ -31,6 +36,10 @@ export default function PersonPanel({ person, relation, path, noPath, meId, peop
       <p>{describeProfile(person)}</p>
       {relation && <span className="relation-badge">{relation}</span>}
     </div>
+    {person.id !== meId && <div className="panel-section actions">
+      <ConnectionRequest key={person.id} personId={person.id} meId={meId} connections={connections} onChanged={onConnectionsChanged} onError={onError} />
+      <Link to={`/people/${encodeURIComponent(person.id)}/path`}>Consultar caminho</Link>
+    </div>}
     <div className="panel-section"><h3>Sobre</h3><p className="preserve-lines">{person.bio || 'Esta pessoa ainda não adicionou um resumo ao perfil.'}</p></div>
     {path && <div className="panel-section"><h3>Caminho possível</h3><div className="path-summary">
       {path.user_ids.map((id, index) => {

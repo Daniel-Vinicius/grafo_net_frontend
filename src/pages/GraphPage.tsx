@@ -9,7 +9,7 @@ import ResultsPanel from '../components/graph/ResultsPanel'
 import SearchLoading from '../components/graph/SearchLoading'
 import SmartSearch from '../components/graph/SmartSearch'
 import { getGraph, searchProfiles } from '../services/GraphService'
-import type { Graph, GraphEdge, SearchPath, SearchResult } from '../types/graph'
+import type { Connection, Graph, GraphEdge, SearchPath, SearchResult } from '../types/graph'
 import type { Profile } from '../types/profile'
 import { friendsLayout, pathLayout, ringLayout } from '../utils/graphLayout'
 import { describePath, plural } from '../utils/profileText'
@@ -40,8 +40,8 @@ function pathScene(path: SearchPath, graph: Graph, meId: string, people: Map<str
     faded: new Set(friends),
   }
 }
-interface Props { profileId: string; onError: (error: unknown) => void }
-export default function GraphPage({ profileId, onError }: Props) {
+interface Props { profileId: string; connections: Connection[]; onConnectionsChanged: () => Promise<void>; onError: (error: unknown) => void }
+export default function GraphPage({ profileId, connections, onConnectionsChanged, onError }: Props) {
   const location = useLocation()
   const [graph, setGraph] = useState<Graph | null>(null)
   const [failed, setFailed] = useState(false)
@@ -130,7 +130,7 @@ export default function GraphPage({ profileId, onError }: Props) {
           <div className="graph-hint"><span>Arraste para explorar</span><span>•</span><span>Selecione um perfil</span></div>
         </div>
       </section>
-      <PersonPanel person={selected} relation={relation} path={selectedHit?.path ?? null} noPath={!!selectedHit && !selectedHit.path} meId={profileId} people={people} edges={edges} onClose={() => setSelectedId(null)} />
+      <PersonPanel connections={connections} onConnectionsChanged={onConnectionsChanged} onError={onError} person={selected} relation={relation} path={selectedHit?.path ?? null} noPath={!!selectedHit && !selectedHit.path} meId={profileId} people={people} edges={edges} onClose={() => setSelectedId(null)} />
     </div>
     {guide && <RelationshipModal onClose={closeGuide} />}
   </div>

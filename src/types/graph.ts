@@ -35,3 +35,7 @@ export interface Connection {
   created_at: string
   accepted_at: string | null
 }
+
+export type SearchMode = 'proximity' | 'relevance'
+export interface SearchInput { query: string; mode: SearchMode; limit: number; offset: number }
+export interface PathResult { path: SearchPath | null; graph: Graph }
