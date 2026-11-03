@@ -72,12 +72,12 @@ export default function GraphPage({ profileId, onError }: Props) {
 
   function clearSearch() { searchRun.current += 1; setSearching(false); setSearch(null); setActiveId(null); setSelectedId(null) }
   function pick(id: string) { setActiveId(id); setSelectedId(id) }
-  async function runSearch(query: string) {
+  async function runSearch(query: string, limit: number) {
     if (!query.trim()) { setNotice('Descreva quem você quer encontrar.'); return }
     const run = ++searchRun.current
     setNotice(''); setSearching(true)
     try {
-      const next = await searchProfiles(query.trim())
+      const next = await searchProfiles(query.trim(), limit)
       if (run !== searchRun.current) return
       const first = next.results[0]?.profile_id ?? null
       setSearch(next); setActiveId(first); setSelectedId(first)
@@ -106,7 +106,10 @@ export default function GraphPage({ profileId, onError }: Props) {
         <p>Comece pelas suas conexões próximas ou descreva quem você procura.</p>
       </div>
     </div>
-    <SmartSearch busy={searching} onSearch={query => void runSearch(query)} />
+    <SmartSearch
+      busy={searching}
+      onSearch={(query, limit) => void runSearch(query, limit)}
+    />
     {notice && <p className="search-notice" role="status">{notice}</p>}
     <button className="info-button" type="button" onClick={() => setGuide(true)}><Icon name="info" /><span>Como os vínculos funcionam</span></button>
     <div className="network-workspace">

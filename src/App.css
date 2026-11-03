@@ -588,3 +588,54 @@ dt { font-weight: 650; } dd { margin: 0; }
 .danger-button:hover:not(:disabled) { background: #991b1b; }
 .dismiss { float: right; border: 0; background: transparent; font-size: 20px; cursor: pointer; }
 @media (max-width: 540px) { .content-card { padding: 22px; } dl { grid-template-columns: 1fr; } dd { margin-bottom: 8px; } }
+
+/* apenas para mostrar a barra, fruto de um erro que eu não pensei*/
+.search-result-limit {
+  display: grid;
+  gap: 6px;
+  padding: 12px 16px;
+  background: #fff;
+  border: 1px solid #dfe2e6;
+  border-radius: 12px;
+  margin: 12px 0;
+}
+
+.search-result-limit input[type='range'] {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--red);
+}
+
+.search-result-limit small {
+  font-size: 12px;
+  color: #666;
+}
+
+@media (min-width: 761px) {
+  .graph-view .search-result-limit {
+    position: absolute;
+    z-index: 12;
+    top: 120px;
+    left: 24px;
+    right: 24px;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .graph-view:has(.person-panel.has-person) .search-result-limit {
+    right: 380px;
+  }
+
+  .graph-view .graph-toolbar {
+    top: 240px;
+  }
+
+  .graph-view .results-panel {
+    top: 310px;
+    max-height: calc(100% - 330px);
+  }
+
+  .graph-view .result-list {
+    max-height: calc(100vh - 400px);
+  }
+}
