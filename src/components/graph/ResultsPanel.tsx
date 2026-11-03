@@ -12,7 +12,7 @@ interface Props { search: SearchResult; people: Map<string, Profile>; activeId: 
 export default function ResultsPanel({ search, people, activeId, onPick, onClose }: Props) {
   return <div className="results-panel">
     <div className="results-head">
-      <div><span>{plural(search.results.length, 'resultado', 'resultados')}</span>{search.indexing_pending > 0 && <small>{plural(search.indexing_pending, 'perfil ainda sendo indexado', 'perfis ainda sendo indexados')}</small>}</div>
+      <div><span>Mostrando {search.results.length} de {search.total} pessoas encontradas</span>{search.indexing_pending > 0 && <small>{plural(search.indexing_pending, 'perfil ainda sendo indexado', 'perfis ainda sendo indexados')}</small>}</div>
       <button type="button" aria-label="Fechar resultados" onClick={onClose}><Icon name="close" /></button>
     </div>
     <div className="result-list">

@@ -591,3 +591,137 @@ dt { font-weight: 650; } dd { margin: 0; }
 
 .network-path { display: grid; gap: 20px; padding-left: 24px; }
 .network-path p { margin: 6px 0; }
+/* apenas para mostrar a barra, fruto de um erro que eu não pensei*/
+.search-actions {
+  position: relative;
+  justify-self: end;
+}
+
+.search-settings {
+  position: absolute;
+  top: calc(100% + 9px);
+  right: 0;
+  z-index: 20;
+}
+
+.search-settings summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid #e0e2e5;
+  border-radius: 999px;
+  background: #fff;
+  color: #55595f;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  list-style: none;
+  box-shadow: 0 3px 10px rgba(17, 21, 27, .05);
+}
+
+.search-settings summary::-webkit-details-marker {
+  display: none;
+}
+
+.search-settings summary:hover,
+.search-settings[open] summary {
+  color: var(--red);
+  border-color: #f1a7ab;
+  background: var(--red-soft);
+}
+
+.search-settings summary:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 3px;
+}
+
+.search-settings-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(260px, calc(100vw - 110px));
+  box-sizing: border-box;
+  padding: 16px;
+  border: 1px solid #e0e2e5;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(17, 21, 27, .14);
+}
+
+.search-settings-panel label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.search-settings-panel strong {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.smart-search .search-settings-panel input[type='range'] {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--red);
+  cursor: pointer;
+}
+
+.smart-search .search-settings-panel input:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 3px;
+}
+
+.search-settings-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  color: #777;
+  font-size: 10px;
+}
+
+.search-settings-panel p {
+  margin: 12px 0 0;
+  color: #777;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* Reserva espaço para a configuração abaixo do botão. */
+.graph-view .search-suggestions {
+  margin-top: 42px;
+}
+
+@media (min-width: 761px) {
+  .graph-view .smart-search {
+    z-index: 15;
+  }
+
+  .graph-view .search-suggestions {
+    top: 112px;
+    margin: 0 auto;
+  }
+
+  .graph-view .graph-toolbar {
+    top: 158px;
+  }
+
+  .graph-view .results-panel {
+    top: 220px;
+    max-height: calc(100% - 240px);
+  }
+
+  .graph-view .result-list {
+    max-height: calc(100vh - 332px);
+  }
+}
