@@ -2,6 +2,19 @@
 
 Frontend React + TypeScript para autenticação, perfil, rede, conexões e orientações do GrafoNet.
 
+## Produção na AWS
+
+- Site: <http://34.203.245.73>
+- API e documentação: <http://34.203.245.73/api/docs/>
+
+Gere o build com `VITE_API_URL=/api npm run build` e publique o conteúdo de
+`dist/` pelo Nginx, com fallback para `index.html`. Na ausência de
+`VITE_API_URL`, o cliente usa `/api`. A API Flask continua sem prefixo
+internamente; o Nginx remove `/api/` ao encaminhar as chamadas.
+
+O `.env` local não é versionado. Variáveis `VITE_*` entram no JavaScript
+público: nunca coloque nelas credenciais do banco, SMTP ou Gemini.
+
 ## Executar
 
 Copie `.env.example` para `.env` e configure a URL da API:
