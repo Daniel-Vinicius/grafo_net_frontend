@@ -22,7 +22,7 @@ export default function AppSidebar({ profile, courseName, friendCount, people, b
         {links.map(link => <NavLink key={link.to} className="nav-item" to={link.to} end={link.to === '/'} aria-label={link.label}>
           <Icon name={link.icon} /><span>{link.label}</span>{link.to === '/connections' && <strong>{friendCount}</strong>}
         </NavLink>)}
-        {profile.type === 'professor' && <NavLink className="nav-item" to="/orientations"><Icon name="users" /><span>Orientações</span></NavLink>}
+        {profile.type === 'professor' && <NavLink className="nav-item" to="/orientations" aria-label="Orientações"><Icon name="users" /><span>Orientações</span></NavLink>}
       </nav>
       <div className="sidebar-foot">
         {people !== null && <div className="community-count"><b>{people}</b><span>pessoas na rede</span></div>}
